@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
-set(PROJECT_VESRION 0.0.${PATCH_VERSION})
+set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
-project(P004 VERSION ${PROJECT_VESRION})
+project(P004 VERSION ${PROJECT_VERSION})
 #option(BUILD_TESTS "Whether to build Boost test" ON)
 configure_file(version.h.in version.h)
 set(CMAKE_CXX_STANDARD 17)
@@ -39,36 +39,24 @@ if(Boost_FOUND)
   message(STATUS "Пути к заголовкам: ${Boost_INCLUDE_DIRS}")
   message(STATUS "Библиотеки: ${Boost_LIBRARIES}")
 endif()
-# find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 add_executable(test_version test_version.cpp)
-# add_executable(test_hello test_hello.cpp)
+add_executable(test_hello test_hello.cpp)
 
 set_target_properties(test_version PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
-)
-# set_target_properties(test_hello PROPERTIES
-#     CXX_STANDARD 17
-#     CXX_STANDARD_REQUIRED ON
-# )
-set_target_properties(test_version PROPERTIES
     COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
-    INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
 )
-# set_target_properties(test_hello PROPERTIES
-#     COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
-#     INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
-# )
-# target_link_libraries(test_hello lib_hello)
- target_link_libraries(test_version lib_version)
-# target_link_libraries(test_hello
-# ${Boost_LIBRARIES}
-# lib_hello
-# )
-target_link_libraries(test_version
-${Boost_LIBRARIES}
-lib_version
+set_target_properties(test_hello PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+    COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
 )
+target_include_directories(test_version PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(test_version PRIVATE lib_ver ${Boost_LIBRARIES})
+target_include_directories(test_hello PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(test_hello PRIVATE lib_hello ${Boost_LIBRARIES})
 
 #endif()
 
@@ -84,5 +72,5 @@ include(CPack)
 
 
 enable_testing()
-# add_test(test_hello test_hello)
+add_test(test_hello test_hello)
 add_test(test_version test_version)
